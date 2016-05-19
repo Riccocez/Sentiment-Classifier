@@ -4,13 +4,12 @@
 import methods_raw_input
 
 
+# Main code for sentiment classifier
 
-#--------------------------------------
+#action = raw_input ("Introduce name of Raw Database  ")
+action = "Tweets.csv"
 
-# Interaction with user
+#text = methods_raw_input.load_file(action)
 
-action = raw_input ("Introduce name of Raw Database  ")
-
-text = methods_raw_input.load_file(action.lower())
-
-methods_raw_input.print_file(text)
+methods_raw_input.read_filelines(action)
+#methods_raw_input.split_fileline_0(action)
