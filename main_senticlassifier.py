@@ -2,14 +2,15 @@
 
 
 import methods_raw_input
+import preprocessing
 
 
 # Main code for sentiment classifier
 
-#action = raw_input ("Introduce name of Raw Database  ")
-action = "Tweets.csv"
+data_filename = "Tweets.csv"
+p_train_data = 0.7
+split_mode = 'normal'
 
-#text = methods_raw_input.load_file(action)
 
-methods_raw_input.read_filelines(action)
-#methods_raw_input.split_fileline_0(action)
+
+train_data, test_data = methods_raw_input.really_read_filelines(data_filename, p_train_data, split_mode)

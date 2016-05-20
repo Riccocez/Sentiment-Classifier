@@ -2,8 +2,10 @@
 
 import nltk
 from random import shuffle
+from petl import fromcsv, look, cut, tocsv, fieldnames, values, head, tail
 
-### Methods
+
+### Methods for preprocessing Raw Dataset
 
 #Load a full file
 def load_file(filename):
@@ -29,11 +31,52 @@ def split_fileline(line):
     
     return no_fields, line_splitted
 
+
+def really_read_filelines(filename, p_train_data, split_mode):
+    
+    #Load the table
+    csvfile = fromcsv(filename)
+
+    train_data, test_data = split_dataset(csvfile, p_train_data, split_mode)
+
+    return train_data, test_data
+
+
+#Split Dataset in training and testing data
+def split_dataset(dataset, p_train_data, split_mode):
+
+    fields = list(fieldnames(dataset))
+    
+    size_dataset = len(values(dataset, fields[0])) 
+    size_train_data = int(round(size_dataset * p_train_data))
+    size_test_data = abs(size_train_data - size_dataset)
+
+
+    if split_mode == 'normal' :
+
+        train_data = head(dataset, size_train_data - 1)
+        
+        if size_test_data == 0:
+            
+            test_data = []
+            
+        else:
+            
+            test_data = tail(dataset, size_test_data - 1)
+
+    #################### Falta incluir Shuffle mode ###############
+
+    return train_data, test_data
+
+
+
+ 
+                
 #Read and print each line of filename
-def read_filelines(filename):
+def read_filelines(filename, p_train_data):
+    
     no_lines = 0
     raw_dataset = []
-    
 
     with open(filename,'r') as f:
 
@@ -42,25 +85,27 @@ def read_filelines(filename):
         header_no_fields,header_splitted = split_fileline(header_line)
         
         #Getting each tweet
-        next(f)
+        next(f)        
         for line in f:
         
             no_fields,line_splitted = split_fileline(line)
-            no_lines += 1
-            raw_dataset.append(line_splitted)
-            print line_splitted, '\n'
-                       
-        print "Number of lines: " + str(no_lines)
-        train_data, test_data = split_traintest_data(raw_dataset,0.3,'normal')
-        
-    return 
+            
+            if no_fields == header_no_fields:
+                
+                raw_dataset.append(line_splitted)
                 
 
-def split_traintest_data(dataset, test_size, split_mode):
+    train_data, test_data = split_traintest_data(raw_dataset,p_train_data,'normal')
 
-    size_raw_dataset = len(dataset)
-    size_test_data = int(round(size_raw_dataset * test_size))
-    size_train_data = abs(size_raw_dataset - size_test_data)
+    return train_data, test_data
+
+
+def split_traintest_data(dataset, p_train_data, split_mode):
+
+    s_raw_dataset = len(dataset)
+    size_train_data = int(round(s_raw_dataset * p_train_data))
+    size_test_data = abs(size_train_data - s_raw_dataset)
+    
 
     if split_mode == 'normal':
         
@@ -72,11 +117,6 @@ def split_traintest_data(dataset, test_size, split_mode):
         shuffle(dataset)
         train_data = dataset[0:size_train_data - 1]
         test_data = dataset[size_train_data:]
-
-    print "Entries for test data: ", size_test_data
-    print "Training data: ", size_train_data
-    print "Testing data: ", size_test_data
-    print "Test Samples: ", test_data[0:2]
     
 
     return train_data, test_data
