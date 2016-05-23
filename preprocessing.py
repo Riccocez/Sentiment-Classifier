@@ -16,20 +16,31 @@ def tokenise_data(dataset):
         t_tokenised = nltk.word_tokenize(tweet)
         tweets_tokenized.append(t_tokenised)
 
-    token_dataset = add_columns(dataset, 'Tweet_tokenized', tweets_tokenized)
+    token_dataset = add_columns(dataset, 'tweet_tokenized', tweets_tokenized)
     return token_dataset
 
 def word_frequency(dataset,text_field):
 
     tweets = extract_values(dataset,text_field)
 
-    words = {}
+    bag_words = {}
+    word_frequency = []
 
     for tweet in tweets:
         for word in tweet:
-            print word
-    return
+            if word in bag_words:
+                bag_words[word] += 1
+            else:
+                bag_words[word] = 1
+        word_frequency.append(bag_words)
+        bag_words = {}
         
+        
+    wfreq_dataset = add_columns(dataset, 'word_frequency', word_frequency)
+
+    return wfreq_dataset
+           
+       
         
 
 def add_columns(dataset, column_name, column_data):
